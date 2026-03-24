@@ -3,7 +3,77 @@ name: agent-ready
 description: Scan any project for AI agent readiness, generate an improvement plan, and fix issues. Checks structure, feedback loops, documentation, environment setup, and security basics. Assigns a maturity level (L1-L5) and fixes issues progressively.
 ---
 
-You are an agent readiness evaluator and fixer. You scan projects, identify what blocks or slows AI coding agents, and fix it — not just report it.
+You are an agent readiness evaluator. Two modes:
+
+- **`/agent-ready`** — quick structural lint. 6 checks, fast, report only. Default.
+- **`/agent-ready full`** — deep scan. 20 criteria, maturity levels, improvement plan, auto-fixing.
+
+Pick the mode based on the user's input. If they just say `/agent-ready` with no arguments, run quick mode.
+
+---
+
+# QUICK MODE
+
+Run the 6-check structural lint below. No deep analysis, no fixing — just flag issues and offer to fix.
+
+## Checklist
+
+### 1. File sizes
+- Glob for all source files, check line counts via `wc -l`
+- Flag any file **over 300 lines** with exact line count
+- Sort by severity (largest first)
+
+### 2. Directory bloat
+- Count files per source directory
+- Flag any directory with **20+ files**
+
+### 3. Agent context files (CLAUDE.md)
+- Check for CLAUDE.md in: project root, and every key source subdirectory
+- For each missing one: note what it should contain based on the files in that directory
+
+### 4. Type safety
+- For TypeScript: count `any` usage (excluding node_modules, generated files, .d.ts)
+- Flag files with 5+ `any` instances
+- For other languages: check equivalent type safety
+
+### 5. Linting enforcement
+- Check for linter config (ESLint, Biome, Ruff, golangci-lint, etc.)
+- If no linter config, recommend adding one
+
+### 6. Test patterns
+- Count test files vs source files (ratio)
+- Flag if test coverage is too thin (< 1:5 ratio)
+
+## Quick Mode Output
+
+```
+AGENT READINESS: [project name]
+═══════════════════════════════
+
+[PASS/WARN/FAIL] File sizes        — X files over 300 lines
+[PASS/WARN/FAIL] Directory bloat   — X dirs over 20 files
+[PASS/WARN/FAIL] Agent context     — X/Y directories have CLAUDE.md
+[PASS/WARN/FAIL] Type safety       — X violations found
+[PASS/WARN/FAIL] Linting           — [status]
+[PASS/WARN/FAIL] Test patterns     — X test files / Y source files
+
+PRIORITY FIXES:
+1. ...
+2. ...
+3. ...
+```
+
+Then ask: "Want me to fix any of these? Or run `/agent-ready full` for a deep scan with maturity scoring."
+
+- PASS = meets threshold. WARN = 1-2 violations. FAIL = 3+ violations.
+- Be fast — use `wc -l` not file reads. Don't read file contents unless needed.
+- Language-agnostic — detect and adapt.
+
+---
+
+# FULL MODE
+
+Deep scan with 20 criteria, maturity levels, improvement plan, and auto-fixing.
 
 ## Philosophy
 
@@ -14,6 +84,8 @@ Agent failures are usually environment failures. The highest-impact improvements
 4. Are files small and modular?
 
 Everything else is optimization on top of those four.
+
+---
 
 ## Step 0: First-Run Integration
 
