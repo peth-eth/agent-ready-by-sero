@@ -1,142 +1,81 @@
 # Agent Ready by Sero
 
-Makes your codebase agent-friendly and keeps it that way. Small files so agents don't waste tokens reading a thousand lines to find the one thing they need. CLAUDE.md in every directory so they know what's going on without guessing. Tests so they can check their own work. Run it once, it bolts the rules into your global config — every project you touch from that point forward enforces the same standards automatically. You're not auditing anymore, you're setting the floor.
+Scan any project for AI agent readiness, fix what's broken, and level up — not just report. 20 criteria across 5 pillars, maturity levels L1-L5, prioritized improvement plans, and auto-fixing.
 
-For a medium project (50-100 source files), going from unstructured to agent-ready typically means:
-
-- **40-60% fewer tokens per task** (smaller reads + faster orientation)
-- **2-3x faster task completion** (fewer search cycles, less backtracking)
-- **3-5x more parallelizable** (independent files instead of monoliths)
+Most agent failures aren't agent failures — they're environment failures. Missing tests, no linter, undocumented setup, 800-line files. This skill measures what actually matters and fixes it.
 
 ---
+
+## What It Does
+
+1. **Scans** — detects language, framework, structure (mono vs single app)
+2. **Evaluates** — 20 criteria across 5 pillars (feedback loops, structure, docs, testing, safety)
+3. **Scores** — assigns a maturity level (L1 Functional → L5 Exemplary)
+4. **Plans** — generates a prioritized improvement plan, auto-fixable items separated from human-input items
+5. **Fixes** — implements improvements one level at a time, commits after each level, re-scans to confirm
+
+## The 5 Pillars
+
+| Pillar | What It Checks | Why It Matters |
+|--------|---------------|----------------|
+| **Feedback Loops** | Build command, test command, linter, formatter, type checking, pre-commit hooks | Can the agent verify its own work? |
+| **Structure** | File sizes, directory sizes, lock file, type safety violations | Can the agent navigate without drowning in context? |
+| **Documentation** | CLAUDE.md/AGENTS.md, subdirectory context, README setup, .env.example, .gitignore | Can the agent understand the project without guessing? |
+| **Testing** | Tests exist, test-to-source ratio, test patterns | Can the agent prove its changes work? |
+| **Safety** | No hardcoded secrets, dependency update automation | Will the agent introduce vulnerabilities? |
+
+## Maturity Levels
+
+| Level | Name | What It Means |
+|-------|------|---------------|
+| **L1** | Functional | Can build, has basics (linter, lock file, README, .gitignore, tests exist) |
+| **L2** | Documented | Agent can understand the project (CLAUDE.md, type checking, pre-commit hooks, env docs) |
+| **L3** | Agent-Ready | Agent can work effectively (tests runnable, small files, subdir context, good test ratio) |
+| **L4** | Optimized | Agent works with confidence (formatter, test patterns, no secrets, dep updates) |
+| **L5** | Exemplary | Everything dialed |
+
+**L3 is the target for most projects.** At L3, agents can handle routine work — bug fixes, features, tests, docs — without constant human intervention.
+
+## First-Run Integration
+
+On first run, the skill appends **Agent Readiness Standards** to your global `~/.claude/CLAUDE.md`. These rules are then enforced automatically in every project you work on — file size limits, CLAUDE.md requirements, type safety, test minimums, linting.
+
+This only happens once. After that, it just scans and fixes.
 
 ## Installation
 
-Copy `SKILL.md` to `~/.claude/skills/agent-ready/SKILL.md` and run `/agent-ready` in any project.
+Copy `SKILL.md` to `~/.claude/skills/agent-ready/SKILL.md`:
 
----
-
-```markdown
----
-name: agent-ready
-description: Quick structural check to ensure a project is optimized for agentic coding. Lightweight — run on any project, any time. Checks file sizes, directory bloat, agent context files, type safety, linting enforcement, and test patterns. On first run, auto-integrates enforcement rules into global CLAUDE.md.
----
-
-You are a fast, focused agentic readiness checker. Run through the checklist below, report findings, and offer to fix what you find. No deep code review — just structural health.
-
-## Step 0: First-Run Integration
-
-Before running the checklist, check if the file `~/.claude/skills/agent-ready/.integrated` exists.
-
-**If it does NOT exist** (first run):
-
-1. Read `~/.claude/CLAUDE.md`
-2. Check if a section called `## Agent Readiness Standards` already exists
-3. If missing, **append** the following section to the end of `~/.claude/CLAUDE.md`:
-
-## Agent Readiness Standards
-
-Enforced automatically. These apply to ALL projects worked on from this machine.
-
-### Structure
-- **Max file size: 300 lines.** Split into focused sub-modules when exceeded.
-- **Max files per directory: 20.** Reorganize into subdirectories by domain/concern.
-- When splitting files, preserve all existing exports and public API surface.
-
-### Agent Context (CLAUDE.md files)
-- **Every project root** must have a CLAUDE.md.
-- **Every key source subdirectory** (src/lib/, src/components/, src/hooks/, src/app/, or equivalent for non-JS projects) must have a CLAUDE.md.
-- CLAUDE.md contents: module purpose, key files and what they do, patterns to follow, gotchas. Keep to 20-50 lines.
-- **On first touch of a new project:** scan for missing CLAUDE.md files and create them before doing other work.
-- **When creating new directories:** always create a CLAUDE.md in them.
-- Update CLAUDE.md files when you add, remove, or rename files in that directory.
-
-### Type Safety
-- Avoid `any` in TypeScript. Use proper types, generics, or `unknown` with type guards.
-- If you encounter a file with 5+ `any` instances while working on it, fix them.
-- For non-TS projects: follow the language's equivalent type safety conventions.
-
-### Tests
-- When creating a new module or feature, create at least one test file alongside it.
-- Follow existing test patterns in the project. If none exist, create an example test that future agents can reference.
-- Minimum target: 1 test file per 5 source files in actively developed directories.
-
-### Linting
-- If a project has no linter config, recommend adding one during readiness check.
-- Key rules to enforce: file size limits, type safety, import ordering.
-- Never disable linting rules to make code pass — fix the underlying issue.
-
----
-
-4. Create the marker file `~/.claude/skills/agent-ready/.integrated` with content: `Integrated into global CLAUDE.md on [current date]`
-5. Tell the user: "First run — I've added Agent Readiness Standards to your global CLAUDE.md. These rules will now be enforced automatically in every project."
-
-**If `.integrated` exists:** skip this step, proceed to checklist.
-
-## Checklist
-
-### 1. File sizes
-- Glob for all source files, check line counts
-- Flag any file **over 300 lines** with exact line count and recommended split points
-- Sort by severity (largest first)
-
-### 2. Directory bloat
-- Count files per source directory
-- Flag any directory with **20+ files** — recommend subdirectory grouping
-
-### 3. Agent context files (CLAUDE.md)
-- Check for CLAUDE.md in: project root, and every key source subdirectory (src/lib/, src/components/, src/hooks/, src/app/, or equivalent)
-- For non-JS/TS projects, check equivalent directories (e.g., pkg/, internal/, cmd/ for Go; src/, lib/ for Rust/Python)
-- For each missing one: note what it should contain based on the files in that directory
-- Offer to generate them
-
-### 4. Type safety
-- For TypeScript: count `any` usage across the codebase (excluding node_modules, generated files, .d.ts declaration files)
-- Flag files with 5+ `any` instances as priority fixes
-- Check if `@typescript-eslint/no-explicit-any` is configured
-- For other languages: check equivalent type safety (e.g., `# type: ignore` in Python, `interface{}` in Go)
-
-### 5. Linting enforcement
-- Check for linter config (ESLint, Biome, Ruff, golangci-lint, etc. — language-appropriate)
-- For JS/TS, check if it enforces:
-  - `max-lines` (file size limit)
-  - `no-explicit-any`
-  - Import order rules
-- If no linter config or missing key rules, recommend additions
-
-### 6. Test patterns
-- Count test files vs source files (ratio)
-- Check if example tests exist that agents can follow
-- Flag if test coverage is too thin for agents to work safely (< 5% file ratio)
-
-## Output format
-
-AGENT READINESS: [project name]
-═══════════════════════════════
-
-[PASS/WARN/FAIL] File sizes        — X files over 300 lines
-[PASS/WARN/FAIL] Directory bloat   — X dirs over 20 files
-[PASS/WARN/FAIL] Agent context     — X/Y directories have CLAUDE.md
-[PASS/WARN/FAIL] Type safety       — X `any` instances found
-[PASS/WARN/FAIL] Linting           — [missing rules listed]
-[PASS/WARN/FAIL] Test patterns     — X test files / Y source files
-
-PRIORITY FIXES:
-1. ...
-2. ...
-3. ...
-
-Then ask: "Want me to fix any of these?"
-
-## Scoring
-- PASS = meets the threshold
-- WARN = slightly over (1-2 violations)
-- FAIL = significantly over (3+ violations)
-
-## Rules
-- Be fast — don't read file contents unless needed for split-point recommendations
-- Don't suggest code changes — this is structural only
-- Don't run tests or builds — just check structure
-- If everything passes, say so and move on
-- Language-agnostic: detect the project's language and adapt checks accordingly
+```bash
+mkdir -p ~/.claude/skills/agent-ready
+curl -o ~/.claude/skills/agent-ready/SKILL.md \
+  https://raw.githubusercontent.com/peth-eth/agent-ready-by-sero/main/SKILL.md
 ```
+
+Then run `/agent-ready` in any project.
+
+## What It Fixes (auto, no confirmation needed)
+
+- Missing CLAUDE.md files (root + subdirectories) — actually reads the directory and writes useful context
+- Missing .env.example (scans code for env var usage)
+- Missing/sparse .gitignore
+- Missing lint/format scripts in package.json
+- PR/issue templates
+- Pre-commit hooks (husky/lint-staged for JS, pre-commit for Python)
+- Basic test scaffolds when zero tests exist
+
+## What It Asks Before Fixing
+
+- Adding/modifying linter rules
+- Enabling TypeScript strict mode
+- Setting up Dependabot/Renovate
+- Splitting oversized files
+- Fixing type safety violations
+
+## Impact
+
+For a medium project (50-100 source files), going from unstructured to agent-ready typically means:
+
+- **40-60% fewer tokens per task** (smaller files, faster orientation)
+- **2-3x faster task completion** (fewer search cycles, less backtracking)
+- **3-5x more parallelizable** (independent files instead of monoliths)
