@@ -319,6 +319,7 @@ When fixing:
   - Create PR/issue templates
   - Set up pre-commit hooks (husky/lint-staged for JS, pre-commit for Python)
   - Create basic test scaffolds if zero tests exist
+  - **After splitting any oversized file** into new files or directories: create a CLAUDE.md in every new directory created, and update the CLAUDE.md in the source directory to reflect what moved. Read the actual files before writing — never generate placeholder content.
 - **Ask before these** (they change project behavior):
   - Adding/modifying linter rules
   - Enabling TypeScript strict mode
@@ -339,3 +340,4 @@ When fixing:
 - When generating CLAUDE.md files, actually read the directory contents and write useful context — don't generate boilerplate
 - For monorepos: evaluate shared criteria once at root, per-app criteria per deployable unit
 - Never read file contents just to count lines — use `wc -l` via bash for speed
+- **CLAUDE.md rule:** Every time a file is split or a new subdirectory is created (during fixing or as a recommendation), update the CLAUDE.md in the source directory and create a CLAUDE.md in every new directory. This is not optional — treat it as part of the split, not a follow-up step.
